@@ -123,6 +123,28 @@ app.post(
   })
 )
 
+app.post(
+  '/transactions/hex',
+  asyncHandler(async (req, res) => {
+    let { txids } = req.body
+    if (!txids || !_.isArray(txids) || txids.length === 0) {
+      return res.status(400).json({ error: 'Invalid "txids" field' })
+    }
+    txids = _.uniq(txids)
+
+    const response = await Bluebird.map(
+      txids,
+      (txid) => {
+        return electrs.get(`/tx/${txid}/hex`).then((response) => ({
+          txid,
+          hex: response.data
+        }))
+      }
+    )
+    res.json(response)
+  })
+)
+
 app.use((err, req, res, next) => {
   const status = err.statusCode || 500
   const message = err.message || err.toString()
