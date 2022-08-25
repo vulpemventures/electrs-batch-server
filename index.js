@@ -124,7 +124,7 @@ app.post(
 )
 
 app.post(
-  '/txids/transactions/hex',
+  '/transactions/hex',
   asyncHandler(async (req, res) => {
     let { txids } = req.body
     if (!txids || !_.isArray(txids) || txids.length === 0) {
